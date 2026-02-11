@@ -46,5 +46,82 @@
  *   // grandTotal: 1000 + 0 + 50 - 150 = 900
  */
 export function buildZomatoOrder(cart, coupon) {
-  // Your code here
+  // Validation
+  if (!Array.isArray(cart) || cart.length === 0) return null;
+
+  // Process cart items
+  const items = cart
+    .filter((item) => item.qty > 0) // Skip items with qty <= 0
+    .map((item) => {
+      const basePrice = item.price;
+
+      // Calculate addon total
+      let addonTotal = 0;
+      if (item.addons && Array.isArray(item.addons)) {
+        for (let addon of item.addons) {
+          const parts = addon.split(":");
+          if (parts.length === 2) {
+            addonTotal += parseFloat(parts[1]);
+          }
+        }
+      }
+
+      // Calculate item total
+      const itemTotal = (basePrice + addonTotal) * item.qty;
+
+      return {
+        name: item.name,
+        qty: item.qty,
+        basePrice,
+        addonTotal,
+        itemTotal,
+      };
+    });
+
+  // Calculate subtotal
+  const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
+
+  // Calculate delivery fee
+  let deliveryFee;
+  if (subtotal < 500) {
+    deliveryFee = 30;
+  } else if (subtotal < 1000) {
+    deliveryFee = 15;
+  } else {
+    deliveryFee = 0;
+  }
+
+  // Calculate GST (5% of subtotal)
+  const gst = parseFloat((subtotal * 0.05).toFixed(2));
+
+  // Calculate discount based on coupon
+  let discount = 0;
+  if (coupon && typeof coupon === "string") {
+    const couponUpper = coupon.toUpperCase();
+
+    if (couponUpper === "FIRST50") {
+      // 50% off subtotal, max Rs 150
+      discount = Math.min(subtotal * 0.5, 150);
+    } else if (couponUpper === "FLAT100") {
+      discount = 100;
+    } else if (couponUpper === "FREESHIP") {
+      // Delivery fee becomes 0
+      discount = deliveryFee;
+      deliveryFee = 0;
+    }
+  }
+
+  // Calculate grand total
+  let grandTotal = subtotal + deliveryFee + gst - discount;
+  grandTotal = Math.max(0, grandTotal); // minimum 0
+  grandTotal = parseFloat(grandTotal.toFixed(2));
+
+  return {
+    items,
+    subtotal,
+    deliveryFee,
+    gst,
+    discount,
+    grandTotal,
+  };
 }

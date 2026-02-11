@@ -66,9 +66,9 @@
  *       { name: "Rahul", age: 28, gender: "M", booking: "B1", current: "B1" }
  *     ]
  *   })
- *   // => { pnrFormatted: "123-456-7890",
- *   //      trainInfo: "Train: 12301 - Rajdhani Express | NDLS → HWH | Class: 3A",
- *   //      passengers: [...], summary: { ..., allConfirmed: true }, chartPrepared: true }
+ *    => { pnrFormatted: "123-456-7890",
+ *         trainInfo: "Train: 12301 - Rajdhani Express | NDLS → HWH | Class: 3A",
+ *         passengers: [...], summary: { ..., allConfirmed: true }, chartPrepared: true }
  */
 export function processRailwayPNR(pnrData) {
   if (!pnrData || typeof pnrData !== 'object') return null;

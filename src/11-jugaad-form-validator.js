@@ -62,5 +62,113 @@
  *   // => { isValid: false, errors: { name: "...", email: "...", ... } }
  */
 export function validateForm(formData) {
-  // Your code here
+  const errors = {};
+
+  // 1. Validate name
+  const name = formData?.name ?? "";
+  const trimmedName = typeof name === "string" ? name.trim() : "";
+  if (trimmedName.length < 2 || trimmedName.length > 50) {
+    errors.name = "Name must be 2-50 characters";
+  }
+
+  // 2. Validate email
+  const email = formData?.email ?? "";
+  if (typeof email === "string") {
+    const atIndex = email.indexOf("@");
+    const lastAtIndex = email.lastIndexOf("@");
+    // Must have exactly one @
+    if (atIndex === -1 || atIndex !== lastAtIndex) {
+      errors.email = "Invalid email format";
+    } else {
+      // Must have at least one . after @
+      const afterAt = email.substring(atIndex + 1);
+      if (!afterAt.includes(".")) {
+        errors.email = "Invalid email format";
+      }
+    }
+  } else {
+    errors.email = "Invalid email format";
+  }
+
+  // 3. Validate phone
+  const phone = formData?.phone ?? "";
+  if (typeof phone === "string" && phone.length === 10) {
+    const firstChar = phone.charAt(0);
+    if (
+      firstChar !== "6" &&
+      firstChar !== "7" &&
+      firstChar !== "8" &&
+      firstChar !== "9"
+    ) {
+      errors.phone = "Invalid Indian phone number";
+    } else {
+      // Check all chars are digits
+      let allDigits = true;
+      for (let i = 0; i < phone.length; i++) {
+        if (phone[i] < "0" || phone[i] > "9") {
+          allDigits = false;
+          break;
+        }
+      }
+      if (!allDigits) {
+        errors.phone = "Invalid Indian phone number";
+      }
+    }
+  } else {
+    errors.phone = "Invalid Indian phone number";
+  }
+
+  // 4. Validate age
+  let age = formData?.age;
+  if (typeof age === "string") {
+    age = parseInt(age);
+  }
+  if (
+    typeof age !== "number" ||
+    isNaN(age) ||
+    !Number.isInteger(age) ||
+    age < 16 ||
+    age > 100
+  ) {
+    errors.age = "Age must be an integer between 16 and 100";
+  }
+
+  // 5. Validate pincode
+  const pincode = formData?.pincode ?? "";
+  if (typeof pincode === "string" && pincode.length === 6) {
+    if (pincode.charAt(0) === "0") {
+      errors.pincode = "Invalid Indian pincode";
+    } else {
+      // Check all chars are digits
+      let allDigits = true;
+      for (let i = 0; i < pincode.length; i++) {
+        if (pincode[i] < "0" || pincode[i] > "9") {
+          allDigits = false;
+          break;
+        }
+      }
+      if (!allDigits) {
+        errors.pincode = "Invalid Indian pincode";
+      }
+    }
+  } else {
+    errors.pincode = "Invalid Indian pincode";
+  }
+
+  // 6. Validate state
+  const state = formData?.state ?? "";
+  if (typeof state !== "string" || state === "") {
+    errors.state = "State is required";
+  }
+
+  // 7. Validate agreeTerms
+  const agreeTerms = formData?.agreeTerms;
+  if (!Boolean(agreeTerms)) {
+    errors.agreeTerms = "Must agree to terms";
+  }
+
+  // Check if valid
+  const isValid = Object.keys(errors).length === 0;
+
+  return { isValid, errors };
 }

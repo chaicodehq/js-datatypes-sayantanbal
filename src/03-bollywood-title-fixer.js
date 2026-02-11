@@ -30,5 +30,49 @@
  *   // => "Dil ka Kya Kare"
  */
 export function fixBollywoodTitle(title) {
-  // Your code here
+  // Validation
+  if (typeof title !== "string") return "";
+
+  // Trim and check if empty
+  const trimmed = title.trim();
+  if (trimmed === "") return "";
+
+  // Remove extra spaces (replace multiple spaces with single space)
+  let cleaned = trimmed.split(/\s+/).join(" ");
+
+  // Words that should be lowercase (except at the start)
+  const lowercaseWords = [
+    "ka",
+    "ki",
+    "ke",
+    "se",
+    "aur",
+    "ya",
+    "the",
+    "of",
+    "in",
+    "a",
+    "an",
+  ];
+
+  // Split into words and apply Title Case
+  const words = cleaned.split(" ");
+  const titleCased = words.map((word, index) => {
+    const lowerWord = word.toLowerCase();
+
+    // If it's the first word, always capitalize
+    if (index === 0) {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }
+
+    // If it's a small word, keep it lowercase
+    if (lowercaseWords.includes(lowerWord)) {
+      return lowerWord;
+    }
+
+    // Otherwise, title case
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  });
+
+  return titleCased.join(" ");
 }
